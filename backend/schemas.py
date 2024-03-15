@@ -20,3 +20,16 @@ class User(PublicUserInfo):
 @dataclass    
 class Session:
     session_idx: str
+    user_idx: int
+
+@dataclass    
+class Document:
+    idx: int
+
+@dataclass
+class Task:
+    idx: int
+    document_idx: int
+    result_idx: int
+    status: str
+    error: str

@@ -1,24 +1,30 @@
 'use client'
+
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { setCookie, getCookie } from 'cookies-next';
+
+import UserInfo from '../components/UserInfo';
+import FileUpload from '../components/FileUpload';
+import FileList from '../components/FileList';
+import TaskList from '../components/TaskList';
+import Billing from '../components/Billing';
 
 
 const MainPage = () => {
-    const router = useRouter();
-
-    React.useEffect(() => {
-        const sessionId = getCookie('sessionId');
-
-        if (!sessionId) {
-            router.push('/login');
-        }
-    }, []);
+    const [tokens, setTokens] = useState(0);
 
     return (
         <div>
             <h1>Основная страница</h1>
-            {/* Остальной контент страницы */}
+            
+            <UserInfo tokens={tokens} setTokens={setTokens} />
+            <br />
+            <FileUpload />
+            <br />
+            <FileList tokens={tokens} setTokens={setTokens}/>
+            <br />
+            <TaskList />
+            <br />
+            <Billing />
         </div>
     );
 };

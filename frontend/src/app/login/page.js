@@ -5,24 +5,33 @@ import { setCookie, getCookie } from 'cookies-next';
 
 
 const MainPage = () => {
-    const router = useRouter();
-    
-    let session = getCookie('session');
-    if(session){
-        //session = JSON.parse()
-        fetch('/api/sessions/verify?' + new URLSearchParams({"session_idx": session.session_idx}))
-        .then((res) => res.json())
-        .then((res) => {if(res.status == 'CORRECT_IDENTIFYER'){router.push('//');}})
-    }
 
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail]       = useState('');
+    const [message, setMessage]   = useState('')
+    
+    const checkSession = async () => {
+        
+        let session = getCookie('session');
+        console.log('Current session: ' + session + ', checking...');
+        if(session){
+            let resp = await fetch('/api/sessions/' + session);
+            if(resp.ok){
+                router.push('//');
+            }
+        }    
+    }
+
+    useEffect(() => {
+        checkSession();
+    }, []);
 
     const signup = async data => {
         try {
             console.log({name: username, password, email})
-            let resp = await fetch('api/users', {
+            let resp = await fetch('/api/users', {
                 body: JSON.stringify({name: username, password, email}),
                 method: "POST",
                 headers: new Headers({"Content-Type": "application/json"})
@@ -41,7 +50,6 @@ const MainPage = () => {
 
       const login = async data => {
         try {
-            console.log({name: username, password, email})
             let resp = await fetch('/api/sessions', {
                 body: JSON.stringify({name: username, password, email}),
                 method: "POST",
@@ -49,11 +57,15 @@ const MainPage = () => {
             });
             if(resp.ok){
                 let res = await resp.json();
-                console.log(res);
+                res = res.session_idx;
+                console.log('OK, session ID: ' + res)
                 setCookie('session', res);
+                await checkSession();
             }
             else{
                 console.log(resp.status);
+                let msg = await resp.text();
+                setMessage(msg);
             }
         } catch (error) {
             console.error(error);
@@ -73,6 +85,7 @@ const MainPage = () => {
 
         <input type="button" value="Зарегистрироваться" onClick={signup} />
         <input type="button" value="Войти" onClick={login} />
+        <span>{message && <p>{message}</p>}</span>
     </form>
     );
 };

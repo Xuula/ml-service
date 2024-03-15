@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from users import users_router
-from sessions import s_router
+from methods.users import users_router
+from methods.sessions import s_router
+from methods.documents import docs_router
+from methods.tasks import tasks_router
 
 import tables
 from database import engine
@@ -24,3 +26,6 @@ app.add_middleware(
 
 app.include_router(users_router)
 app.include_router(s_router)
+app.include_router(docs_router)
+app.include_router(tasks_router)
+
